@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perfect Design | حلول هندسية ومعمارية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { tajawal: ['Tajawal','sans-serif'] },
+    colors: { ink:'#12161c', slate2:'#1c232c', line:'#2c3542', gold:'#b8935a', mist:'#8b96a3' }
+  }}
+}
+</script>
+<style>
+  body{font-family:'Tajawal',sans-serif}
+  .blueprint{
+    background-color:#12161c;
+    background-image:
+      linear-gradient(rgba(184,147,90,.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(184,147,90,.08) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+  .card{transition:transform .35s ease, border-color .35s ease}
+  .card:hover{transform:translateY(-4px); border-color:#b8935a}
+  #lightbox{
+    backdrop-filter:blur(6px);
+    background:rgba(9,12,16,.82);
+  }
+  .lightbox-shell{
+    width:min(92vw, 1200px);
+    max-height:90vh;
+    background:rgba(18,22,28,.96);
+    border:1px solid rgba(184,147,90,.25);
+    border-radius:22px;
+    box-shadow:0 25px 80px rgba(0,0,0,.55);
+  }
+  #lbImg{
+    width:100%;
+    min-height:62vh;
+    max-height:78vh;
+    overflow:hidden;
+    border-radius:18px;
+    background:linear-gradient(135deg, rgba(44,53,66,.9), rgba(15,19,25,.95));
+    border:1px solid rgba(184,147,90,.25);
+  }
+  #lbImg img{
+    display:block;
+    width:100%;
+    height:min(78vh, 760px);
+    object-fit:contain;
+    object-position:center;
+    background:#0f1319;
+  }
+  .navlink.active{color:#b8935a}
+</style>
+</head>
+<body class="bg-[#0f1319] text-[#e7e9ec]">
+
+<!-- NAV -->
+<header class="sticky top-0 z-40 bg-[#0f1319]/90 backdrop-blur border-b border-line">
+  <div class="max-w-6xl mx-auto flex items-center justify-between px-5 py-4">
+    <div>
+      <p class="text-xl font-black tracking-tight">Perfect Design</p>
+      <p class="text-[11px] text-mist">م. [ احمد انور] — استشارات هندسية ومعمارية</p>
+    </div>
+
+    <nav class="hidden md:flex gap-6 text-base font-bold text-mist" id="navlinks">
+      <a href="#residential" class="navlink hover:text-gold">سكني</a>
+      <a href="#facades" class="navlink hover:text-gold">واجهات ومداخل</a>
+      <a href="#furniture" class="navlink hover:text-gold">بلان فرش</a>
+      <a href="#marketing" class="navlink hover:text-gold">بلان تسويقي عقاري</a>
+      <a href="#shopdrawing" class="navlink hover:text-gold">شوب درونج</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <button onclick="document.getElementById('loginModal').classList.remove('hidden')" class="text-sm text-mist hover:text-gold border border-line rounded-full px-4 py-2">لوحة التحكم</button>
+      <a href="#contact" class="bg-gold text-ink text-sm font-bold px-4 py-2 rounded-full hover:brightness-110">تواصل معانا</a>
+    </div>
+  </div>
+  <nav class="flex md:hidden gap-4 overflow-x-auto px-5 pb-3 text-xs text-mist whitespace-nowrap">
+    <a href="#residential">سكني</a><a href="#facades">واجهات</a><a href="#furniture">فرش</a><a href="#marketing">تسويقي</a><a href="#shopdrawing">شوب درونج</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="blueprint relative flex items-center min-h-[86vh] px-5">
+  <div class="absolute inset-0 bg-gradient-to-t from-[#0f1319] via-[#0f1319]/40 to-transparent"></div>
+  <div class="relative max-w-3xl mx-auto text-center py-24">
+    <img src="logo.jpeg" alt="شعار Perfect Design" class="mx-auto mb-6 h-28 w-auto max-w-[80vw] object-contain drop-shadow-lg">
+    <p class="text-gold text-sm tracking-wide mb-4">تصميم معماري وهندسة إنشائية</p>
+    <h1 class="text-4xl md:text-6xl font-black leading-tight mb-5">أهلاً بكم في<br><span class="text-gold">Perfect Design</span></h1>
+    <p class="text-lg text-mist mb-8">م. [ احمد انور] — حلول هندسية ومعمارية متكاملة تجمع بين الدقة الإنشائية والذوق التصميمي</p>
+    <a href="#contact" class="inline-block bg-gold text-ink font-bold px-8 py-3.5 rounded-full hover:brightness-110">تواصل معانا</a>
+  </div>
+</section>
+
+<!-- SERVICE SECTIONS -->
+<div id="sections"></div>
+
+<!-- CONTACT -->
+<footer id="contact" class="bg-slate2 border-t border-line px-5 py-16">
+  <div class="max-w-3xl mx-auto text-center">
+    <h2 class="text-3xl font-black mb-3">تواصل معانا</h2>
+    <p class="text-mist mb-8">جاهزين نسمع فكرتك ونحولها لتصميم هندسي احترافي</p>
+    <div class="flex justify-center gap-4">
+      <a href="https://wa.me/qr/YMPHHSLYCKZMH1" target="_blank"  class="w-12 h-12 grid place-items-center rounded-full border border-line hover:border-gold hover:text-gold" title="WhatsApp">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20zm4.4-5.6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.7.9-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.5s-.5-1.3-.7-1.7-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1c0 1.2.9 2.4 1 2.6s1.8 2.8 4.3 3.9a5 5 0 0 0 2.2.5 1.9 1.9 0 0 0 1.3-.9 1.6 1.6 0 0 0 .1-.9c0-.1-.2-.2-.4-.2z"/></svg>
+      </a>
+      
+    <a href="https://www.facebook.com/profile.php?id=61584129113844&mibextid=ZbWKwL" target="_blank"   class="w-12 h-12 grid place-items-center rounded-full border border-line hover:border-gold hover:text-gold" title="Facebook">
+    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z"/></svg>
+    </a>
+      <a href="https://mail.google.com/mail/?view=cm&fs=1&to=ahmedanwarabdallah8@gmail.com"   target="_blank"    class="w-12 h-12 grid place-items-center rounded-full border border-line hover:border-gold hover:text-gold" title="Email">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M2 5h20v14H2zm2 2 8 6 8-6"/></svg>
+      </a>
+    </div>
+    <p class="text-xs text-mist mt-10">© Perfect Design — جميع الحقوق محفوظة</p>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" class="hidden fixed inset-0 z-50 grid place-items-center p-4 md:p-6" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="lightbox-shell w-full p-4 md:p-6 text-center">
+    <div class="relative">
+      <div id="lbImg" class="rounded-lg grid place-items-center text-mist text-sm mb-4 overflow-hidden"></div>
+      <button onclick="event.stopPropagation(); lbNav(-1)" class="hidden lb-arrow absolute right-2 top-1/2 -translate-y-1/2 -mt-3 w-9 h-9 rounded-full bg-ink/80 border border-line text-lg">›</button>
+      <button onclick="event.stopPropagation(); lbNav(1)" class="hidden lb-arrow absolute left-2 top-1/2 -translate-y-1/2 -mt-3 w-9 h-9 rounded-full bg-ink/80 border border-line text-lg">‹</button>
+    </div>
+    <p id="lbTitle" class="font-bold"></p>
+    <p id="lbDesc" class="text-sm text-mist mt-1"></p>
+    <p id="lbCount" class="text-xs text-gold mt-2"></p>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="hidden fixed inset-0 bg-black/80 z-50 grid place-items-center p-6">
+  <div class="max-w-sm w-full bg-slate2 border border-line rounded-xl p-6">
+    <p class="font-bold mb-4">تسجيل دخول المالك</p>
+    <input id="loginEmail" type="email" placeholder="البريد الإلكتروني" class="w-full mb-3 bg-ink border border-line rounded px-3 py-2 text-sm">
+    <div class="relative mb-4">
+      <input id="loginPass" type="password" placeholder="كلمة المرور" class="w-full bg-ink border border-line rounded px-3 py-2 pl-16 text-sm">
+      <button type="button" onclick="toggleLoginPassword()" aria-controls="loginPass" aria-pressed="false" class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-mist hover:text-gold">إظهار</button>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="ownerLogin()" class="flex-1 bg-gold text-ink font-bold rounded py-2 text-sm">دخول</button>
+      <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="flex-1 border border-line rounded py-2 text-sm">إلغاء</button>
+    </div>
+    <p id="loginMsg" class="text-xs text-mist mt-3"></p>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div id="adminPanel" class="hidden fixed inset-0 bg-black/85 z-50 overflow-y-auto p-6">
+  <div class="max-w-xl mx-auto bg-slate2 border border-line rounded-xl p-6">
+    <div class="flex justify-between items-center mb-5">
+      <p class="font-bold">لوحة التحكم — إضافة مشروع</p>
+      <button onclick="document.getElementById('adminPanel').classList.add('hidden')" class="text-mist">✕</button>
+    </div>
+    <input id="pTitle" placeholder="عنوان المشروع" class="w-full mb-3 bg-ink border border-line rounded px-3 py-2 text-sm">
+    <textarea id="pDesc" placeholder="وصف مختصر" class="w-full mb-3 bg-ink border border-line rounded px-3 py-2 text-sm"></textarea>
+    <select id="pCat" class="w-full mb-3 bg-ink border border-line rounded px-3 py-2 text-sm">
+      <option value="residential">سكني</option>
+      <option value="facades">واجهات ومداخل</option>
+      <option value="furniture">بلان فرش</option>
+      <option value="marketing">بلان تسويقي عقاري</option>
+      <option value="shopdrawing">شوب درونج</option>
+    </select>
+    <input id="pFile" type="file" accept="image/*" multiple class="w-full mb-2 text-xs text-mist">
+    <p class="text-[11px] text-mist mb-3">اختار أي عدد من الصور من جهازك وهترفع تلقائي، أو الصق روابط جاهزة تحت</p>
+    <textarea id="pImg" rows="3" placeholder="أو الصق روابط صور جاهزة — سطر لكل صورة" class="w-full mb-1 bg-ink border border-line rounded px-3 py-2 text-sm"></textarea>
+    <p class="text-[11px] text-mist mb-4">مفيش حد أقصى لعدد الصور (رفع + روابط مع بعض)</p>
+    <button id="pSubmitBtn" onclick="addProject()" class="w-full bg-gold text-ink font-bold rounded py-2 text-sm">إضافة للمعرض</button>
+    <p id="adminMsg" class="text-xs text-mist mt-3"></p>
+    <div class="border-t border-line mt-6 pt-4">
+      <p class="font-bold text-sm mb-3">المشاريع المضافة</p>
+      <div id="projectList" class="space-y-2 text-sm"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- Category config ----------
+const CATS = [
+  {id:'residential',   title:'سكني', desc:'تصميم فيلات ومنازل سكنية بمخططات معمارية وإنشائية متكاملة تراعي الراحة والاستدامة.'},
+  {id:'facades',       title:'واجهات ومداخل', desc:'واجهات معمارية عصرية وتصاميم مداخل تعكس هوية المبنى وتبرز طابعه المميز.'},
+  {id:'furniture',     title:'بلان فرش', desc:'مخططات فرش داخلي دقيقة توضح توزيع الأثاث والمساحات الوظيفية لكل غرفة.'},
+  {id:'marketing',     title:'بلان تسويقي عقاري', desc:'مخططات تسويقية احترافية للوحدات العقارية مصممة لجذب المشترين وتسهيل العرض.'},
+  {id:'shopdrawing',   title:'شوب درونج', desc:'رسومات تنفيذية (Shop Drawings) تفصيلية جاهزة للتنفيذ في الموقع بدقة عالية.'},
+];
+
+function escapeHTML(value){
+  const entities = {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'};
+  return String(value ?? '').replace(/[&<>"']/g, character=>entities[character]);
+}
+
+// in-memory project store (falls back if Firestore isn't configured)
+let projects = [];
+
+function placeholderCards(catId, n){
+  return Array.from({length:n}).map((_,i)=>({title:`مشروع ${i+1}`, desc:'وصف مختصر للمشروع', cat:catId, imgs:[]}));
+}
+
+function renderSections(){
+  const wrap = document.getElementById('sections');
+  wrap.innerHTML = CATS.map(c=>{
+    const items = projects.filter(p=>p.cat===c.id);
+    const list = items.length ? items : placeholderCards(c.id, 3);
+    return `
+    <section id="${c.id}" class="px-5 py-16 border-t border-line">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-black mb-2">${escapeHTML(c.title)}</h2>
+        <p class="text-mist max-w-xl mb-8">${escapeHTML(c.desc)}</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          ${list.map(p=>`
+            <div class="card cursor-pointer border border-line rounded-lg overflow-hidden bg-slate2 relative"
+                 data-project="${escapeHTML(JSON.stringify({title:p.title, desc:p.desc, imgs:p.imgs||[]}))}">
+              ${(p.imgs&&p.imgs.length>1) ? `<span class="absolute top-2 left-2 z-10 bg-ink/80 text-gold text-[10px] px-2 py-0.5 rounded-full border border-line">${escapeHTML(p.imgs.length)} صور</span>` : ''}
+              <div class="aspect-square bg-gradient-to-br from-line to-ink grid place-items-center text-mist text-xs">${(p.imgs&&p.imgs[0]) ? `<img src="${escapeHTML(p.imgs[0])}" class="w-full h-full object-cover">` : 'صورة المشروع'}</div>
+              <div class="p-3">
+                <p class="text-sm font-bold">${escapeHTML(p.title)}</p>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  }).join('');
+  wrap.onclick = event=>{
+    const card = event.target.closest('[data-project]');
+    if (!card) return;
+    try {
+      const project = JSON.parse(card.dataset.project);
+      openLightbox(project.title, project.desc, project.imgs);
+    } catch(e){ console.warn('Invalid project data.'); }
+  };
+}
+renderSections();
+
+let lbImgs = [];
+let lbIndex = 0;
+function openLightbox(title, desc, imgs){
+  lbImgs = imgs || [];
+  lbIndex = 0;
+  document.getElementById('lbTitle').textContent = title;
+  document.getElementById('lbDesc').textContent = desc;
+  document.querySelectorAll('.lb-arrow').forEach(b=> b.classList.toggle('hidden', lbImgs.length<2));
+  renderLbImage();
+  document.getElementById('lightbox').classList.remove('hidden');
+}
+function renderLbImage(){
+  const box = document.getElementById('lbImg');
+  box.innerHTML = lbImgs[lbIndex] ? `<img src="${escapeHTML(lbImgs[lbIndex])}" class="w-full h-full object-cover">` : 'صورة المشروع';
+  document.getElementById('lbCount').textContent = lbImgs.length ? `${lbIndex+1} / ${lbImgs.length}` : '';
+}
+function lbNav(dir){
+  if (!lbImgs.length) return;
+  lbIndex = (lbIndex + dir + lbImgs.length) % lbImgs.length;
+  renderLbImage();
+}
+
+// ---------- Firebase (owner login + Firestore) ----------
+// 1) Add your Firebase config below.
+// 2) Include these three SDK files in <head> BEFORE this script when you host the file
+//    (add each as a script tag pointing to the matching gstatic.com firebasejs 10.12.0 URL):
+//    firebase-app-compat.js, firebase-auth-compat.js, firebase-firestore-compat.js, firebase-storage-compat.js
+const firebaseConfig = {
+  apiKey: "AIzaSyC3k2LTSiU0IYC3VKPkKMICHTch4Dn62Us",
+  authDomain: "perfect-design-6c700.firebaseapp.com",
+  projectId: "perfect-design-6c700",
+  storageBucket: "perfect-design-6c700.firebasestorage.app",
+  messagingSenderId: "179908770788",
+  appId: "1:179908770788:web:524f350f7a474ee2a6a5f1"
+};
+let fbReady = false;
+const ADMIN_UIDS = new Set(['wgr0eEQMUhcJfKh65UBO3s6hoyZ2', 'SFDEU7TUPRSXqKcziZ5bc2Jp5ct1']);
+try {
+  if (window.firebase) {
+    firebase.initializeApp(firebaseConfig);
+    fbReady = true;
+    firebase.firestore().collection('projects').onSnapshot(snap=>{
+      projects = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      renderSections();
+      renderProjectList();
+    });
+  }
+} catch(e){ console.warn('Firebase not loaded — running in offline/demo mode.'); }
+
+function toggleLoginPassword(){
+  const input = document.getElementById('loginPass');
+  const button = input.parentElement.querySelector('button');
+  const showPassword = input.type === 'password';
+  input.type = showPassword ? 'text' : 'password';
+  button.textContent = showPassword ? 'إخفاء' : 'إظهار';
+  button.setAttribute('aria-pressed', String(showPassword));
+}
+
+function ownerLogin(){
+  const email = document.getElementById('loginEmail').value;
+  const pass = document.getElementById('loginPass').value;
+  if (!fbReady){
+    document.getElementById('loginMsg').textContent = 'وضع تجريبي: أضف Firebase SDK لتفعيل الدخول الفعلي.';
+    return;
+  }
+  firebase.auth().signInWithEmailAndPassword(email, pass)
+    .then(userCredential=>{
+      if (!ADMIN_UIDS.has(userCredential.user.uid)){
+        document.getElementById('loginMsg').textContent = 'هذا الحساب غير مصرح له بفتح لوحة التحكم.';
+        return firebase.auth().signOut();
+      }
+      document.getElementById('loginModal').classList.add('hidden');
+      document.getElementById('adminPanel').classList.remove('hidden');
+    })
+    .catch(()=> document.getElementById('loginMsg').textContent = 'غير مسموح بهذا الحساب، أو أن البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+}
+
+let editingId = null;
+
+function renderProjectList(){
+  const el = document.getElementById('projectList');
+  if (!el) return;
+  if (!projects.length){ el.innerHTML = '<p class="text-mist text-xs">لسه مفيش مشاريع مضافة.</p>'; return; }
+  el.innerHTML = projects.map(p=>`
+    <div class="flex items-center justify-between border border-line rounded px-3 py-2">
+      <span>${escapeHTML(p.title)} <span class="text-mist text-xs">(${escapeHTML(Array.isArray(p.imgs)?p.imgs.length:0)} صور)</span></span>
+      <span class="flex gap-2">
+        <button data-action="edit" data-id="${escapeHTML(p.id)}" class="text-gold text-xs">تعديل</button>
+        <button data-action="delete" data-id="${escapeHTML(p.id)}" class="text-red-400 text-xs">حذف</button>
+      </span>
+    </div>`).join('');
+  el.onclick = event=>{
+    const button = event.target.closest('button[data-action]');
+    if (!button || !el.contains(button)) return;
+    if (button.dataset.action === 'edit') editProject(button.dataset.id);
+    if (button.dataset.action === 'delete') deleteProject(button.dataset.id);
+  };
+}
+
+function editProject(id){
+  const p = projects.find(x=>x.id===id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('pTitle').value = p.title || '';
+  document.getElementById('pDesc').value = p.desc || '';
+  document.getElementById('pCat').value = p.cat || 'residential';
+  document.getElementById('pImg').value = (p.imgs||[]).join('\n');
+  document.getElementById('pSubmitBtn').textContent = 'تحديث المشروع';
+}
+
+function deleteProject(id){
+  if (!fbReady) { projects = projects.filter(p=>p.id!==id); renderSections(); renderProjectList(); return; }
+  firebase.firestore().collection('projects').doc(id).delete();
+}
+
+async function uploadSelectedFiles(){
+  const input = document.getElementById('pFile');
+  const files = Array.from(input.files || []);
+  if (!files.length) return [];
+  if (!fbReady || !firebase.storage) {
+    document.getElementById('adminMsg').textContent = 'الرفع محتاج Firebase Storage مفعّل ومربوط.';
+    return [];
+  }
+  const urls = [];
+  for (const file of files){
+    const ref = firebase.storage().ref('projects/' + Date.now() + '_' + file.name);
+    await ref.put(file);
+    urls.push(await ref.getDownloadURL());
+  }
+  return urls;
+}
+
+async function addProject(){
+  document.getElementById('adminMsg').textContent = 'جاري الحفظ...';
+  const uploaded = await uploadSelectedFiles();
+  const pasted = document.getElementById('pImg').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const imgs = [...uploaded, ...pasted];
+  const p = {
+    title: document.getElementById('pTitle').value || 'مشروع بدون عنوان',
+    desc: document.getElementById('pDesc').value || '',
+    cat: document.getElementById('pCat').value,
+    imgs
+  };
+  const col = fbReady ? firebase.firestore().collection('projects') : null;
+  if (fbReady){
+    const op = editingId ? col.doc(editingId).set(p) : col.add(p);
+    op.then(()=>{ document.getElementById('adminMsg').textContent = editingId ? 'تم التحديث.' : 'تم الحفظ في Firestore.'; resetForm(); })
+      .catch(err=> document.getElementById('adminMsg').textContent = err.message);
+  } else {
+    if (editingId){ const i = projects.findIndex(x=>x.id===editingId); if(i>-1) projects[i]={...p,id:editingId}; }
+    else projects.push({...p, id: 'local_'+Date.now()});
+    renderSections(); renderProjectList();
+    document.getElementById('adminMsg').textContent = 'أضيف محلياً (وضع تجريبي بدون Firebase).';
+    resetForm();
+  }
+}
+
+function resetForm(){
+  editingId = null;
+  document.getElementById('pTitle').value = '';
+  document.getElementById('pDesc').value = '';
+  document.getElementById('pImg').value = '';
+  document.getElementById('pFile').value = '';
+  document.getElementById('pSubmitBtn').textContent = 'إضافة للمعرض';
+}
+history.scrollRestoration = "manual";
+
+window.addEventListener("load", () => {
+    window.scrollTo(0, 0);
+});
+</script>
+</body>
+</html>
