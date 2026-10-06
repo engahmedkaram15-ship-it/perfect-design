@@ -5,6 +5,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,36 +32,17 @@ tailwind.config = {
   }
   .card{transition:transform .35s ease, border-color .35s ease}
   .card:hover{transform:translateY(-4px); border-color:#b8935a}
-  #lightbox{
-    backdrop-filter:blur(6px);
-    background:rgba(9,12,16,.82);
-  }
-  .lightbox-shell{
-    width:min(92vw, 1200px);
-    max-height:90vh;
-    background:rgba(18,22,28,.96);
-    border:1px solid rgba(184,147,90,.25);
-    border-radius:22px;
-    box-shadow:0 25px 80px rgba(0,0,0,.55);
-  }
-  #lbImg{
-    width:100%;
-    min-height:62vh;
-    max-height:78vh;
-    overflow:hidden;
-    border-radius:18px;
-    background:linear-gradient(135deg, rgba(44,53,66,.9), rgba(15,19,25,.95));
-    border:1px solid rgba(184,147,90,.25);
-  }
-  #lbImg img{
-    display:block;
-    width:100%;
-    height:min(78vh, 760px);
-    object-fit:contain;
-    object-position:center;
-    background:#0f1319;
-  }
+  #lightbox{backdrop-filter:blur(6px)}
+  #lbImg{overflow:hidden; position:relative; height:min(82vh, 900px); width:100%; max-width:100%; margin:0 auto; border-radius:12px;}
+  #lbImg img{display:block; width:100%; height:100%; object-fit:contain; transform-origin:center center; transition:transform .12s ease;}
   .navlink.active{color:#b8935a}
+  @media (max-width: 640px){
+    .blueprint{background-size:32px 32px}
+    header .max-w-6xl{padding-top:0.85rem; padding-bottom:0.85rem}
+    .max-w-3xl h1{font-size:2.5rem}
+    .max-w-3xl p{font-size:1rem}
+    #lbImg{height:60vh}
+  }
 </style>
 </head>
 <body class="bg-[#0f1319] text-[#e7e9ec]">
@@ -127,10 +109,16 @@ tailwind.config = {
 </footer>
 
 <!-- LIGHTBOX -->
-<div id="lightbox" class="hidden fixed inset-0 z-50 grid place-items-center p-4 md:p-6" onclick="if(event.target===this)this.classList.add('hidden')">
-  <div class="lightbox-shell w-full p-4 md:p-6 text-center">
-    <div class="relative">
-      <div id="lbImg" class="rounded-lg grid place-items-center text-mist text-sm mb-4 overflow-hidden"></div>
+<div id="lightbox" class="hidden fixed inset-0 bg-black/80 z-50 grid place-items-center p-2 sm:p-6" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="w-[97vw] max-w-[1500px] bg-slate2 border border-line rounded-xl p-2 sm:p-5 text-center relative">
+    <button type="button" onclick="event.stopPropagation(); closeLightbox()" aria-label="إغلاق الصورة" title="إغلاق الصورة" class="absolute left-2 top-2 z-30 w-9 h-9 rounded-full bg-ink/80 border border-line text-lg text-gold hover:border-gold">✕</button>
+    <div class="relative pt-10 sm:pt-6">
+      <div id="lbImg" class="relative rounded-lg bg-gradient-to-br from-line to-ink grid place-items-center text-mist text-sm mb-4 overflow-hidden"></div>
+      <div class="absolute top-2 right-2 z-20 flex gap-1" dir="ltr">
+        <button type="button" onclick="event.stopPropagation(); lbZoom(-1)" aria-label="تصغير الصورة" title="تصغير الصورة" class="min-w-9 h-9 px-2 grid place-items-center rounded bg-ink/85 border border-line text-base hover:border-gold">-</button>
+        <button type="button" onclick="event.stopPropagation(); lbResetZoom()" aria-label="إعادة الحجم الطبيعي" title="إعادة الحجم الطبيعي" class="min-w-14 h-9 px-2 grid place-items-center rounded bg-ink/85 border border-line text-xs text-gold hover:border-gold"><span id="lbZoomLevel">100%</span></button>
+        <button type="button" onclick="event.stopPropagation(); lbZoom(1)" aria-label="تكبير الصورة" title="تكبير الصورة" class="min-w-9 h-9 px-2 grid place-items-center rounded bg-ink/85 border border-line text-base hover:border-gold">+</button>
+      </div>
       <button onclick="event.stopPropagation(); lbNav(-1)" class="hidden lb-arrow absolute right-2 top-1/2 -translate-y-1/2 -mt-3 w-9 h-9 rounded-full bg-ink/80 border border-line text-lg">›</button>
       <button onclick="event.stopPropagation(); lbNav(1)" class="hidden lb-arrow absolute left-2 top-1/2 -translate-y-1/2 -mt-3 w-9 h-9 rounded-full bg-ink/80 border border-line text-lg">‹</button>
     </div>
@@ -174,9 +162,9 @@ tailwind.config = {
       <option value="shopdrawing">شوب درونج</option>
     </select>
     <input id="pFile" type="file" accept="image/*" multiple class="w-full mb-2 text-xs text-mist">
-    <p class="text-[11px] text-mist mb-3">اختار أي عدد من الصور من جهازك وهترفع تلقائي، أو الصق روابط جاهزة تحت</p>
+    <p class="text-[11px] text-mist mb-3">اختار الصور من جهازك أو الصق روابط جاهزة تحت. لا يوجد حد أقصى للصور في المشروع.</p>
     <textarea id="pImg" rows="3" placeholder="أو الصق روابط صور جاهزة — سطر لكل صورة" class="w-full mb-1 bg-ink border border-line rounded px-3 py-2 text-sm"></textarea>
-    <p class="text-[11px] text-mist mb-4">مفيش حد أقصى لعدد الصور (رفع + روابط مع بعض)</p>
+    <p class="text-[11px] text-mist mb-4">يمكنك إضافة أي عدد من الصور للمشروع الواحد.</p>
     <button id="pSubmitBtn" onclick="addProject()" class="w-full bg-gold text-ink font-bold rounded py-2 text-sm">إضافة للمعرض</button>
     <p id="adminMsg" class="text-xs text-mist mt-3"></p>
     <div class="border-t border-line mt-6 pt-4">
@@ -223,7 +211,7 @@ function renderSections(){
             <div class="card cursor-pointer border border-line rounded-lg overflow-hidden bg-slate2 relative"
                  data-project="${escapeHTML(JSON.stringify({title:p.title, desc:p.desc, imgs:p.imgs||[]}))}">
               ${(p.imgs&&p.imgs.length>1) ? `<span class="absolute top-2 left-2 z-10 bg-ink/80 text-gold text-[10px] px-2 py-0.5 rounded-full border border-line">${escapeHTML(p.imgs.length)} صور</span>` : ''}
-              <div class="aspect-square bg-gradient-to-br from-line to-ink grid place-items-center text-mist text-xs">${(p.imgs&&p.imgs[0]) ? `<img src="${escapeHTML(p.imgs[0])}" class="w-full h-full object-cover">` : 'صورة المشروع'}</div>
+              <div class="relative aspect-square overflow-hidden bg-gradient-to-br from-line to-ink grid place-items-center text-mist text-xs">${(p.imgs&&p.imgs[0]) ? `<img src="${escapeHTML(p.imgs[0])}" class="absolute inset-0 w-full h-full object-cover">` : 'صورة المشروع'}</div>
               <div class="p-3">
                 <p class="text-sm font-bold">${escapeHTML(p.title)}</p>
               </div>
@@ -245,6 +233,76 @@ renderSections();
 
 let lbImgs = [];
 let lbIndex = 0;
+let lbScale = 1;
+let lbOffsetX = 0;
+let lbOffsetY = 0;
+let lbDragStart = null;
+
+function updateLbZoom(){
+  const box = document.getElementById('lbImg');
+  const img = box.querySelector('img');
+  if (img){
+    img.style.transform = `translate(${lbOffsetX}px, ${lbOffsetY}px) scale(${lbScale})`;
+    img.style.cursor = lbDragStart ? 'grabbing' : (lbScale > 1 ? 'grab' : 'default');
+    img.style.transformOrigin = 'center center';
+    img.style.maxWidth = 'none';
+    img.style.maxHeight = 'none';
+  }
+  document.getElementById('lbZoomLevel').textContent = `${Math.round(lbScale*100)}%`;
+}
+
+function lbZoom(direction){
+  lbScale = Math.min(3, Math.max(1, Number((lbScale + direction*0.25).toFixed(2))));
+  if (lbScale === 1){ lbOffsetX = 0; lbOffsetY = 0; }
+  updateLbZoom();
+}
+
+function lbResetZoom(){
+  lbScale = 1;
+  lbOffsetX = 0;
+  lbOffsetY = 0;
+  lbDragStart = null;
+  updateLbZoom();
+}
+
+function enableLbImageZoom(img){
+  img.draggable = false;
+  img.style.touchAction = 'none';
+  img.style.objectFit = 'contain';
+  img.style.transformOrigin = 'center center';
+  img.addEventListener('wheel', event=>{
+    event.preventDefault();
+    lbZoom(event.deltaY < 0 ? 1 : -1);
+  }, {passive:false});
+  img.addEventListener('pointerdown', event=>{
+    if (lbScale <= 1 || event.button !== 0) return;
+    lbDragStart = {pointerId:event.pointerId, x:event.clientX, y:event.clientY, offsetX:lbOffsetX, offsetY:lbOffsetY};
+    img.setPointerCapture(event.pointerId);
+    img.style.cursor = 'grabbing';
+  });
+  img.addEventListener('pointermove', event=>{
+    if (!lbDragStart || lbDragStart.pointerId !== event.pointerId) return;
+    const box = document.getElementById('lbImg');
+    const maxX = box.clientWidth*(lbScale-1)/2;
+    const maxY = box.clientHeight*(lbScale-1)/2;
+    lbOffsetX = Math.max(-maxX, Math.min(maxX, lbDragStart.offsetX + event.clientX - lbDragStart.x));
+    lbOffsetY = Math.max(-maxY, Math.min(maxY, lbDragStart.offsetY + event.clientY - lbDragStart.y));
+    updateLbZoom();
+  });
+  const stopDragging = event=>{
+    if (!lbDragStart || lbDragStart.pointerId !== event.pointerId) return;
+    lbDragStart = null;
+    updateLbZoom();
+  };
+  img.addEventListener('pointerup', stopDragging);
+  img.addEventListener('pointercancel', stopDragging);
+}
+
+function closeLightbox(){
+  document.getElementById('lightbox').classList.add('hidden');
+  lbResetZoom();
+}
+
 function openLightbox(title, desc, imgs){
   lbImgs = imgs || [];
   lbIndex = 0;
@@ -256,7 +314,11 @@ function openLightbox(title, desc, imgs){
 }
 function renderLbImage(){
   const box = document.getElementById('lbImg');
-  box.innerHTML = lbImgs[lbIndex] ? `<img src="${escapeHTML(lbImgs[lbIndex])}" class="w-full h-full object-cover">` : 'صورة المشروع';
+  lbResetZoom();
+  box.innerHTML = lbImgs[lbIndex] ? `<img src="${escapeHTML(lbImgs[lbIndex])}" class="absolute inset-0 w-full h-full object-contain" alt="">` : 'صورة المشروع';
+  const img = box.querySelector('img');
+  if (img) enableLbImageZoom(img);
+  updateLbZoom();
   document.getElementById('lbCount').textContent = lbImgs.length ? `${lbIndex+1} / ${lbImgs.length}` : '';
 }
 function lbNav(dir){
@@ -265,10 +327,9 @@ function lbNav(dir){
   renderLbImage();
 }
 
-// ---------- Firebase (owner login + Firestore) ----------
+// ---------- Firebase (owner login + Firestore + Storage) ----------
 // 1) Add your Firebase config below.
-// 2) Include these three SDK files in <head> BEFORE this script when you host the file
-//    (add each as a script tag pointing to the matching gstatic.com firebasejs 10.12.0 URL):
+// 2) Include the SDK files in <head> BEFORE this script when you host the file:
 //    firebase-app-compat.js, firebase-auth-compat.js, firebase-firestore-compat.js, firebase-storage-compat.js
 const firebaseConfig = {
   apiKey: "AIzaSyC3k2LTSiU0IYC3VKPkKMICHTch4Dn62Us",
